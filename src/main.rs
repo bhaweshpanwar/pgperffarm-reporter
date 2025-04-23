@@ -16,6 +16,10 @@ use tokio_postgres::NoTls;
 
 use tera::{Context, Tera};
 
+use actix_files::Files; 
+
+
+
 #[derive(Deserialize)]
 struct AppConfig {
     buildbot_url: String,
@@ -507,14 +511,15 @@ async fn main() -> std::io::Result<()> {
         tera: Tera::new("templates/**/*").unwrap(),
     };
 
-    HttpServer::new(move || {
-        App::new()
-            .app_data(web::Data::new(data.clone()))
-            .service(home)
-            .service(pf_test)
-            .service(pf_test_plant)
-    })
-    .bind((app_config.listen_address, app_config.port))?
-    .run()
-    .await
+        HttpServer::new(move || {
+            App::new()
+                .app_data(web::Data::new(data.clone()))
+                .service(home)
+                .service(pf_test)
+                .service(pf_test_plant)
+                .service(Files::new("/static", "./static").show_files_listing())
+        })
+        .bind((app_config.listen_address, app_config.port))?
+        .run()
+        .await
 }

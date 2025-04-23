@@ -1,40 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>PostgreSQl Performance Farm</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Performance Farm - Performance Checker for PostgreSQL</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/style.css" />
     <style>
-      table {
-        border-collapse: collapse;
+      #mainContent::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
       }
-      table, th, td {
-        border: 1px solid;
+      #mainContent::-webkit-scrollbar-track {
+        background: #ebeef3;
+        border-radius: 4px;
+      }
+      #mainContent::-webkit-scrollbar-thumb {
+        background: #a0aec0;
+        border-radius: 4px;
+      }
+      #mainContent::-webkit-scrollbar-thumb:hover {
+        background: #718096;
+      }
+
+      #mainContent {
+        scrollbar-width: thin;
+        scrollbar-color: #a0aec0 #ebeef3;
+      }
+
+      .tab-active {
+        border-color: #3b82f6; /* blue-500 */
+        color: #2563eb; /* blue-600 */
+        background-color: #eff6ff; /* blue-50 */
       }
     </style>
   </head>
-  <body>
-    <h1>PostgreSQL Performance Farm</h1>
+  <body class="bg-[#EBEEF3] font-roboto text-gray-900">
+    <div class="relative md:flex h-screen overflow-hidden">
+      <div
+        id="sidebarOverlay"
+        class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden md:hidden"
+      ></div>
 
-    <table>
-      <tr>
-        <th>Performance Test</th>
-        <th>Description</th>
-      </tr>
-      <tr>
-        <td><a href="pf/dbt2">Database Test 2</a></td>
-        <td>OLTP</td>
-      </tr>
-      <tr>
-        <td><a href="pf/dbt3">Database Test 3</a></td>
-        <td>DSS</td>
-      </tr>
-      <tr>
-        <td><a href="pf/dbt5">Database Test 5</a></td>
-        <td>OLTP</td>
-      </tr>
-      <tr>
-        <td><a href="pf/dbt7">Database Test 7</a></td>
-        <td>DSS</td>
-      </tr>
-    </table>
+      <nav
+        id="sidebar"
+        class="bg-white text-black w-64 md:w-72 lg:w-96 py-7 absolute border-r-[1px] border-[#BFC2C8] inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out z-30 flex flex-col h-screen overflow-y-auto"
+      >
+        <a
+          href="#"
+          class="text-white flex items-center space-x-2 px-4 mb-10 flex-shrink-0"
+        >
+          <img
+            class="w-8 h-8"
+            src="../static/Postgresql_elephant.svg.png"
+            alt="logo"
+          />
+          <span class="text-[18px] font-normal text-black"
+            >Performance Farm</span
+          >
+        </a>
+
+        <ul id="side-panel" class="flex-grow">
+          <li>
+            <a
+              href="#"
+              class="block py-1 pl-12 transition duration-200 text-black hover:cursor-pointer border-r-4 border-[#30648f]"
+              data-section="home"
+            >
+              Home
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="block py-1 pl-12 transition duration-200 text-black hover:cursor-pointer hover:bg-gray-100"
+              data-section="recent-results"
+            >
+              Recent Results / Default
+            </a>
+          </li>
+
+          <li>
+            <a
+              href="#"
+              class="block py-1 pl-12 transition duration-200 text-black hover:cursor-pointer hover:bg-gray-100"
+              data-section="compare-tests"
+            >
+              Compare Tests
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="block py-1 pl-12 transition duration-200 text-black hover:cursor-pointer hover:bg-gray-100"
+              data-section="compare-systems"
+            >
+              Compare Systems
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="block py-1 pl-12 transition duration-200 text-black hover:cursor-pointer hover:bg-gray-100"
+              data-section="commit-details"
+            >
+              Commit Details
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="block py-1 pl-12 transition duration-200 text-black hover:cursor-pointer hover:bg-gray-100"
+              data-section="saved"
+            >
+              Saved (can be added)
+            </a>
+          </li>
+        </ul>
+
+        <div class="p-4 border-t border-gray-200 mt-auto flex-shrink-0">
+          <p class="text-sm text-gray-500 text-left">Version 1.0</p>
+        </div>
+      </nav>
+
+      <main
+        id="mainContent"
+        class="flex-1 p-6 transition-all duration-300 ease-in-out overflow-y-auto h-screen"
+      >
+        <div
+          class="flex justify-between items-center mb-6 top-0 bg-[#EBEEF3] pt-6 pb-3 z-10"
+        >
+          <div class="flex items-center space-x-2">
+            <button
+              id="sidebarToggle"
+              class="md:hidden p-2 rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+              aria-label="Toggle sidebar"
+            >
+              <svg
+                class="h-6 w-6"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div id="contentWrapper" class="border my-4"></div>
+      </main>
+    </div>
+    <script src="/static/script.js"></script>
   </body>
 </html>

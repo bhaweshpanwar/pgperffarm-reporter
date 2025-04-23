@@ -1,0 +1,36 @@
+<div class="content-wrapper">
+  <h1>System 1</h1>
+
+  <div class="filter-panel">
+    <div id="active-filters" style="font-size: 13px; color: #555"></div>
+  </div>
+
+  <div class="filter-overlay" id="filter-overlay">
+    <div class="filter-content">
+      <h2>Filters & Customization</h2>
+
+      <div>
+        <h3>Date Range</h3>
+        <label>From: <input type="date" id="date-from" /></label>
+        <label>To: <input type="date" id="date-to" /></label>
+      </div>
+      <div>
+        <h3>Branches</h3>
+        <div id="branch-filters"></div>
+      </div>
+      <div class="filter-buttons">
+        <button id="apply-filters">Apply Changes</button>
+        <button id="cancel-filters">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <button id="chart-filter-btn">Filters & Customization ▾</button>
+    <svg id="chart"></svg>
+  </div>
+
+  <div class="branch-legend" id="legend"></div>
+
+  <div class="tooltip" id="tooltip"></div>
+</div>
